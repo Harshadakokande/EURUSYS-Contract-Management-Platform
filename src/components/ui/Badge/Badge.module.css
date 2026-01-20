@@ -10,47 +10,46 @@
     font-weight: var(--font-semibold);
     text-transform: uppercase;
     letter-spacing: var(--tracking-wide);
-    padding: 6px 10px;
+    padding: 6px 12px;
     border-radius: var(--radius-full);
     box-shadow: var(--shadow-xs);
-    transition: all var(--transition-fast);
 }
 
-/* Status variations with enhanced colors */
+/* Modern status colors */
 .created {
-    background: linear-gradient(135deg, var(--color-gray-100) 0%, var(--color-gray-200) 100%);
+    background: linear-gradient(135deg, var(--color-gray-100) 0%, var(--color-gray-50) 100%);
     color: var(--color-gray-700);
     border: 1px solid var(--color-gray-300);
 }
 
 .approved {
     background: linear-gradient(135deg, var(--color-info-bg) 0%, var(--color-primary-50) 100%);
-    color: var(--color-primary-700);
-    border: 1px solid var(--color-primary-200);
+    color: var(--color-info-600);
+    border: 1px solid var(--color-info-300);
 }
 
 .sent {
     background: linear-gradient(135deg, var(--color-warning-bg) 0%, #fef3c7 100%);
-    color: var(--color-warning);
-    border: 1px solid var(--color-warning);
+    color: var(--color-warning-700);
+    border: 1px solid var(--color-warning-300);
 }
 
 .signed {
     background: linear-gradient(135deg, var(--color-success-bg) 0%, var(--color-success-bg) 100%);
-    color: var(--color-success);
-    border: 1px solid var(--color-success);
+    color: var(--color-success-700);
+    border: 1px solid var(--color-success-300);
 }
 
 .locked {
-    background: linear-gradient(135deg, var(--color-gray-200) 0%, var(--color-gray-300) 100%);
+    background: linear-gradient(135deg, var(--color-gray-100) 0%, var(--color-gray-50) 100%);
     color: var(--color-gray-700);
     border: 1px solid var(--color-gray-400);
 }
 
 .revoked {
-    background: linear-gradient(135deg, var(--color-error-bg) 0%, #fee2e2 100%);
-    color: var(--color-error);
-    border: 1px solid var(--color-error);
+    background: linear-gradient(135deg, var(--color-error-bg) 0%, #fef2f2 100%);
+    color: var(--color-error-600);
+    border: 1px solid var(--color-error-300);
 }
 
 .default {

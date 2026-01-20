@@ -8,6 +8,12 @@ import { PageHeader } from '../../../components/Layout';
 import { BlueprintForm } from '../../../components/features/BlueprintForm/BlueprintForm';
 import type { BlueprintField } from '../../../types';
 
+interface BlueprintUpdatePayload {
+    name: string;
+    description: string;
+    fields: BlueprintField[];
+}
+
 export function BlueprintEdit() {
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
@@ -24,7 +30,7 @@ export function BlueprintEdit() {
         );
     }
 
-    const handleSubmit = (data: { name: string; description: string; fields: BlueprintField[] }) => {
+    const handleSubmit = (data: BlueprintUpdatePayload) => {
         updateBlueprint(blueprint.id, data);
         navigate('/blueprints');
     };

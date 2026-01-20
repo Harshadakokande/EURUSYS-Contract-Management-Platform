@@ -288,6 +288,19 @@
     line-height: var(--leading-relaxed);
 }
 
+/* Screen Reader Only Content */
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 /* Mobile Optimizations */
 @media (max-width: 640px) {
     .header {

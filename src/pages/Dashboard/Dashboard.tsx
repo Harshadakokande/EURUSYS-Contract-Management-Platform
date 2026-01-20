@@ -252,22 +252,39 @@ export function Dashboard() {
                 columns={columns}
                 getRowKey={(contract) => contract.id}
                 onRowClick={(contract) => navigate(`/contracts/${contract.id}`)}
+                aria-label={`Contracts ${activeFilter === 'ALL' ? '' : `in ${FILTER_LABELS[activeFilter]}`}`}
                 emptyState={
-                    <div className={styles.emptyState}>
-                        <svg className={styles.emptyIcon} viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2">
+                    <div className={styles.emptyState} role="status" aria-live="polite">
+                        <svg className={styles.emptyIcon} viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                             <rect x="8" y="8" width="48" height="48" rx="4" />
                             <path d="M20 24h24M20 32h16M20 40h20" />
                         </svg>
                         <h2 className={styles.emptyTitle}>{emptyStateMessage[activeFilter].title}</h2>
                         <p className={styles.emptyDescription}>
                             {searchQuery
-                                ? 'No contracts match your search'
+                                ? `No contracts match "${searchQuery}". Try adjusting your search terms.`
                                 : emptyStateMessage[activeFilter].description}
                         </p>
                         {activeFilter === 'ALL' && !searchQuery && (
-                            <Link to="/contracts/new">
-                                <Button>Create Contract</Button>
-                            </Link>
+                            <div className={styles.emptyActions}>
+                                <p className={styles.emptyHint}>
+                                    💡 <strong>Getting Started:</strong> Create your first blueprint template, then use it to generate contracts.
+                                </p>
+                                <Link to="/contracts/new">
+                                    <Button>
+                                        📄 Create Your First Contract
+                                    </Button>
+                                </Link>
+                            </div>
+                        )}
+                        {activeFilter !== 'ALL' && !searchQuery && (
+                            <div className={styles.emptyActions}>
+                                <Link to="/">
+                                    <Button variant="secondary">
+                                        ← View All Contracts
+                                    </Button>
+                                </Link>
+                            </div>
                         )}
                     </div>
                 }

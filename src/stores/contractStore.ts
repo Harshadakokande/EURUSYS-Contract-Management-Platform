@@ -5,29 +5,32 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Contract, ContractCreateInput, ContractField, ContractStatus, DashboardFilter } from '../types';
-import { generateId, getCurrentTimestamp, canTransition, getStatusesForFilter } from '../utils';
+import type {
+    Contract,
+    ContractCreateInput,
+    ContractField,
+    ContractStatus,
+    DashboardFilter,
+} from '../types';
+import {
+    generateId,
+    getCurrentTimestamp,
+    canTransition,
+    getStatusesForFilter,
+    getValidTransitions,
+} from '../utils';
 import { useBlueprintStore } from './blueprintStore';
 
 interface ContractState {
-    /** All contracts */
     contracts: Contract[];
-    /** Loading state */
     isLoading: boolean;
 
-    /** Get a single contract by ID */
     getContract: (id: string) => Contract | undefined;
-    /** Get contracts filtered by dashboard category */
     getContractsByFilter: (filter: DashboardFilter) => Contract[];
-    /** Create a new contract from a blueprint */
     createContract: (input: ContractCreateInput) => Contract | undefined;
-    /** Update contract field values */
     updateContractFields: (id: string, fields: ContractField[]) => boolean;
-    /** Transition contract to a new status */
     transitionStatus: (id: string, newStatus: ContractStatus) => boolean;
-    /** Delete a contract */
     deleteContract: (id: string) => boolean;
-    /** Search contracts by name */
     searchContracts: (query: string) => Contract[];
 }
 
@@ -37,41 +40,48 @@ export const useContractStore = create<ContractState>()(
             contracts: [],
             isLoading: false,
 
-            getContract: (id) => {
-                return get().contracts.find((c) => c.id === id);
-            },
+            getContract: (id) => get().contracts.find((c) => c.id === id),
 
             getContractsByFilter: (filter) => {
-                const contracts = get().contracts;
                 const statuses = getStatusesForFilter(filter);
-                return contracts.filter((c) => statuses.includes(c.status));
+                return get().contracts.filter((c) => statuses.includes(c.status));
             },
 
             createContract: (input) => {
-                // Get the blueprint
-                const blueprint = useBlueprintStore.getState().getBlueprint(input.blueprintId);
+                if (!input.name.trim()) {
+                    console.error('Contract name cannot be empty');
+                    return undefined;
+                }
+
+                const blueprint =
+                    useBlueprintStore.getState().getBlueprint(input.blueprintId);
+
                 if (!blueprint) {
-                    console.error('Blueprint not found:', input.blueprintId);
+                    console.error(`Blueprint ${input.blueprintId} not found`);
                     return undefined;
                 }
 
                 const now = getCurrentTimestamp();
 
-                // Copy fields from blueprint with empty values
-                const fields: ContractField[] = blueprint.fields.map((f) => ({
-                    id: f.id,
-                    type: f.type,
-                    label: f.label,
-                    position: f.position,
-                    required: f.required,
-                    editableBy: f.editableBy,
-                    placeholder: f.placeholder,
-                    value: f.type === 'CHECKBOX' ? (f.defaultChecked ?? false) : null,
-                }));
+                const fields: ContractField[] = blueprint.fields
+                    .sort((a, b) => a.position - b.position)
+                    .map((bf) => ({
+                        id: bf.id,
+                        type: bf.type,
+                        label: bf.label,
+                        position: bf.position,
+                        required: bf.required,
+                        editableBy: bf.editableBy,
+                        placeholder: bf.placeholder,
+                        value:
+                            bf.type === 'CHECKBOX'
+                                ? bf.defaultChecked ?? false
+                                : null,
+                    }));
 
                 const contract: Contract = {
                     id: generateId(),
-                    name: input.name,
+                    name: input.name.trim(),
                     blueprintId: blueprint.id,
                     blueprintName: blueprint.name,
                     status: 'CREATED',
@@ -87,23 +97,28 @@ export const useContractStore = create<ContractState>()(
                 return contract;
             },
 
-            updateContractFields: (id, fields) => {
+            updateContractFields: (id, updatedFields) => {
                 const contract = get().getContract(id);
                 if (!contract) return false;
 
-                // Allow editing in CREATED state, or signature updates in SENT state
-                const isCreated = contract.status === 'CREATED';
-                const isSentSignature = contract.status === 'SENT';
+                const isManagerEditable = contract.status === 'CREATED';
+                const isClientEditable = contract.status === 'SENT';
 
-                if (!isCreated && !isSentSignature) {
-                    console.warn('Cannot edit contract in status:', contract.status);
+                if (!isManagerEditable && !isClientEditable) {
+                    console.warn(
+                        `Cannot edit fields in status: ${contract.status}`
+                    );
                     return false;
                 }
 
                 set((state) => ({
                     contracts: state.contracts.map((c) =>
                         c.id === id
-                            ? { ...c, fields, updatedAt: getCurrentTimestamp() }
+                            ? {
+                                  ...c,
+                                  fields: updatedFields,
+                                  updatedAt: getCurrentTimestamp(),
+                              }
                             : c
                     ),
                 }));
@@ -113,15 +128,14 @@ export const useContractStore = create<ContractState>()(
 
             transitionStatus: (id, newStatus) => {
                 const contract = get().getContract(id);
-                if (!contract) {
-                    console.error('Contract not found:', id);
-                    return false;
-                }
+                if (!contract) return false;
 
-                // Validate transition using FSM
                 if (!canTransition(contract.status, newStatus)) {
                     console.error(
-                        `Invalid transition: ${contract.status} → ${newStatus}`
+                        `Invalid transition ${contract.status} → ${newStatus}. ` +
+                            `Allowed: ${getValidTransitions(contract.status).join(
+                                ', '
+                            )}`
                     );
                     return false;
                 }
@@ -129,7 +143,11 @@ export const useContractStore = create<ContractState>()(
                 set((state) => ({
                     contracts: state.contracts.map((c) =>
                         c.id === id
-                            ? { ...c, status: newStatus, updatedAt: getCurrentTimestamp() }
+                            ? {
+                                  ...c,
+                                  status: newStatus,
+                                  updatedAt: getCurrentTimestamp(),
+                              }
                             : c
                     ),
                 }));
@@ -148,11 +166,11 @@ export const useContractStore = create<ContractState>()(
             },
 
             searchContracts: (query) => {
-                const lowerQuery = query.toLowerCase();
+                const q = query.toLowerCase();
                 return get().contracts.filter(
                     (c) =>
-                        c.name.toLowerCase().includes(lowerQuery) ||
-                        c.blueprintName.toLowerCase().includes(lowerQuery)
+                        c.name.toLowerCase().includes(q) ||
+                        c.blueprintName.toLowerCase().includes(q)
                 );
             },
         }),

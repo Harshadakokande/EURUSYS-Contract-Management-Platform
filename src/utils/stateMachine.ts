@@ -56,10 +56,16 @@ export const TRANSITION_LABELS: Record<ContractStatus, string> = {
 };
 
 /**
- * Check if a state transition is valid
- * @param from Current status
- * @param to Desired status
- * @returns Whether the transition is allowed
+ * Validates if a contract can transition from one status to another
+ * @param from - The current contract status
+ * @param to - The desired target status
+ * @returns true if the transition is valid according to lifecycle rules
+ * @example
+ * ```typescript
+ * if (canTransition('CREATED', 'APPROVED')) {
+ *   // Transition is allowed
+ * }
+ * ```
  */
 export function canTransition(from: ContractStatus, to: ContractStatus): boolean {
     return TRANSITIONS[from].includes(to);
