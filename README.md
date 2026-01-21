@@ -1,6 +1,6 @@
-# Eurosys Contract Management Platform
+# EURUSYS Contract Management Platform
 
-This project is a Eurosys Contract Management Platform developed using React and TypeScript.  
+This project is a EURUSYS Contract Management Platform developed using React and TypeScript.  
 It provides a structured way to create reusable contract blueprints, generate contracts from those blueprints, and manage contracts through a controlled lifecycle with clearly defined stages.
 
 The application focuses on maintaining correct workflow transitions, consistent state handling, and a clean, user-friendly interface.
