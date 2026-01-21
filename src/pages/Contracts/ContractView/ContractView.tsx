@@ -145,7 +145,7 @@ export function ContractView() {
         navigate('/');
     };
 
-    /* ✅ FIXED: REVOKED handling */
+    /*  FIXED: REVOKED handling */
     const getStepStatus = (
         step: ContractStatus
     ): 'completed' | 'current' | 'pending' | 'revoked' => {

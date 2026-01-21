@@ -144,63 +144,69 @@
     --z-modal: 300;
 }
 
-/* Dark Mode - Professional */
+/* Dark Mode – High-Contrast Professional */
 [data-theme='dark'] {
-    --color-ink: #f8fafc;
-    --color-paper: #0f172a;
-    --color-wash: #1e293b;
-    --color-gray-50: #1e293b;
-    --color-gray-100: #334155;
-    --color-gray-200: #475569;
-    --color-gray-300: #64748b;
-    --color-gray-400: #94a3b8;
-    --color-gray-500: #cbd5e1;
-    --color-gray-600: #e2e8f0;
-    --color-gray-700: #f1f5f9;
-    --color-accent: #f8fafc;
-    --color-error: #ef4444;
-    --color-success: #22c55e;
-    --color-warning: #f59e0b;
-    --color-info: #3b82f6;
-    --color-primary: #64748b;
-    --color-primary-50: #1e293b;
-    --color-primary-100: #334155;
-    --color-primary-200: #475569;
-    --color-primary-300: #64748b;
-    --color-primary-400: #94a3b8;
-    --color-primary-500: #cbd5e1;
-    --color-primary-600: #e2e8f0;
-    --color-primary-700: #f1f5f9;
+    /* Base surfaces (NOT pure black) */
+    --color-paper: #020617;          /* Deep navy */
+    --color-background: #020617;
+    --color-surface: #020617;
+    --color-wash: #020617;
 
-    --color-text: var(--color-ink);
-    --color-text-primary: var(--color-ink);
-    --color-text-secondary: var(--color-gray-400);
-    --color-text-muted: var(--color-gray-500);
-    --color-text-inverse: var(--color-paper);
+    /* Text – bright and readable */
+    --color-ink: #f8fafc;            /* Near white */
+    --color-text-primary: #f8fafc;
+    --color-text-secondary: #cbd5e1; /* Clear secondary */
+    --color-text-muted: #94a3b8;     /* Still readable */
+    --color-text-inverse: #020617;
 
-    --color-background: var(--color-paper);
-    --color-surface: var(--color-paper);
-    --color-surface-hover: var(--color-wash);
-    --color-surface-active: var(--color-gray-100);
-    --color-surface-elevated: var(--color-wash);
+    /* Grays tuned for contrast */
+    --color-gray-50: #020617;
+    --color-gray-100: #020617;
+    --color-gray-200: #1e293b;
+    --color-gray-300: #334155;
+    --color-gray-400: #64748b;
+    --color-gray-500: #94a3b8;
+    --color-gray-600: #cbd5e1;
+    --color-gray-700: #e2e8f0;
+    --color-gray-800: #f1f5f9;
+    --color-gray-900: #f8fafc;
 
-    --color-border: var(--color-gray-200);
-    --color-border-strong: var(--color-gray-300);
-    --color-border-focus: var(--color-primary-400);
+    /* Primary – KEEP brand identity */
+    --color-primary: #818cf8;        /* Indigo visible on dark */
+    --color-primary-50: #1e1b4b;
+    --color-primary-100: #312e81;
+    --color-primary-200: #3730a3;
+    --color-primary-300: #4338ca;
+    --color-primary-400: #4f46e5;
+    --color-primary-500: #6366f1;
+    --color-primary-600: #818cf8;
+    --color-primary-700: #a5b4fc;
 
-    --color-primary-bg: var(--color-primary-100);
-    --color-primary-hover: var(--color-primary-400);
-    --color-error-bg: #451a1a;
-    --color-success-bg: #14532d;
+    --color-primary-bg: #1e1b4b;
+    --color-primary-hover: #a5b4fc;
+    --color-primary-active: #c7d2fe;
+
+    /* Borders – visible but subtle */
+    --color-border: #1e293b;
+    --color-border-strong: #334155;
+    --color-border-focus: #818cf8;
+
+    /* Status colors */
+    --color-error: #f87171;
+    --color-error-bg: #450a0a;
+    --color-success: #4ade80;
+    --color-success-bg: #052e16;
+    --color-warning: #fbbf24;
     --color-warning-bg: #451a03;
-    --color-info-bg: #1e3a8a;
+    --color-info: #60a5fa;
+    --color-info-bg: #172554;
 
-    --color-black: var(--color-paper);
-    --color-white: var(--color-ink);
+    /* Elevation – stronger in dark mode */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.6);
+    --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.7);
+    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.8);
 
-    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.4);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.5);
-    --shadow-lg: 0 8px 12px -2px rgb(0 0 0 / 0.6);
-    --shadow-focus: 0 0 0 2px var(--color-primary-300);
-    --shadow-focus-ring: 0 0 0 3px var(--color-primary-200);
+    /* Focus */
+    --shadow-focus: 0 0 0 2px #818cf8;
+    --shadow-focus-ring: 0 0 0 4px rgba(129, 140, 248, 0.3);
 }

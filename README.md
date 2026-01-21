@@ -1,77 +1,198 @@
-# Contract Management Platform
+# Eurosys Contract Management Platform
 
-[Live Demo](https://contractmanagement.cyberkunju.dev) · Hosted on Azure
+This project is a Eurosys Contract Management Platform developed using React and TypeScript.  
+It provides a structured way to create reusable contract blueprints, generate contracts from those blueprints, and manage contracts through a controlled lifecycle with clearly defined stages.
 
-A contract lifecycle management dashboard built with React + TypeScript. It allows users to design reusable blueprints, generate contract instances, and manage their status through a strict workflow.
+The application focuses on maintaining correct workflow transitions, consistent state handling, and a clean, user-friendly interface.
 
-## Setup
+## Setup Instructions
 
 ```bash
 npm install
 npm run dev
+
 ```
 
-Opens at http://localhost:5173
+Opens at http://localhost:3000
 
 ## Features
 
-**Blueprint Builder**: Create templates with configurable fields (Text, Date, Signature, Checkbox). Supports reordering with move up/down controls.
+**Blueprint Management**  
+Create reusable contract blueprints with configurable fields.  
+Supported field types include Text, Date, Signature, and Checkbox.  
+Fields can be ordered using simple move up and move down controls.
 
-**Lifecycle Engine**: Contracts strictly follow the `Created → Approved → Sent → Signed → Locked` flow. State transitions are validated at the data layer.
+**Contract Lifecycle Control**  
+Contracts move through a predefined lifecycle:
+`Created → Approved → Sent → Signed → Locked`.  
+All state transitions are validated to prevent skipping steps or invalid changes.
 
-**Revocation Logic**: Contracts can be revoked from early stages (Created, Approved, Sent) but become immutable once Signed or Locked.
+**Revocation Handling**  
+Contracts can be revoked during early stages such as Created, Approved, or Sent.  
+Once a contract reaches Signed or Locked status, it becomes immutable.
 
-**Dashboard**: Filterable views (Active, Pending, Signed, Archived) with search by contract or blueprint name.
+**Contract Dashboard**  
+View all contracts in a structured table.  
+Contracts can be filtered by status (Active, Pending, Signed, Archived) and searched by contract or blueprint name.
 
 ## Architecture & Design Decisions
 
-### Why React 18 + TypeScript?
+### React 18 with TypeScript
 
-TypeScript was essential here because the contract lifecycle has strict rules. By typing `ContractStatus` and `FieldType` as union types, the compiler catches invalid transitions before they reach runtime. React 18 was chosen for its mature ecosystem and because the app is purely client-side with no SSR requirements.
+React is used to build a modular, component-based user interface that keeps views and logic clearly separated.
 
-### Why Zustand over Redux?
+TypeScript plays a key role in enforcing correctness across the application. Core concepts such as `ContractStatus` and `FieldType` are defined using strict union types, which helps prevent invalid lifecycle states and transitions during development rather than at runtime. This makes the contract workflow more reliable and easier to maintain.
 
-Redux felt like overkill for this scope. Zustand gives the same benefits (predictable state, devtools support) with far less boilerplate. The built-in `persist` middleware made localStorage integration trivial—just wrap the store and it handles serialization automatically.
+---
 
-### Why CSS Modules instead of Tailwind?
+### State Management with Zustand
 
-I wanted full control over the design without fighting utility class conventions. CSS Modules keep styles scoped to components, and using CSS variables for colors/spacing made theming straightforward. No external dependencies means one less thing to maintain.
+Zustand is used for state management to keep the codebase simple and readable.  
+It provides predictable state updates without introducing the complexity and boilerplate typically associated with larger state management solutions.
 
-### Why a Finite State Machine?
+State persistence is handled using built-in middleware, allowing blueprint and contract data to be retained across page reloads with minimal configuration.
 
-The lifecycle logic needed to be bulletproof. Instead of scattering validation across components, I centralized it in `src/utils/stateMachine.ts`. The `canTransition(from, to)` function is the single source of truth. This makes the rules testable (14 unit tests cover it) and guarantees the UI can't accidentally allow an invalid action.
+### Styling Approach with CSS Modules
 
-### Why snapshot contracts?
+CSS Modules are used to keep styles scoped to individual components and avoid global styling conflicts.  
+This approach provides greater control over layout and visual structure without relying on large utility-class conventions.
 
-When you create a contract from a blueprint, the fields are copied—not referenced. This means editing a blueprint later won't affect existing contracts. It's how real contract systems work: once you generate a document, it's frozen.
+Design tokens such as colors, spacing, and typography are managed using CSS variables, making it easy to maintain consistency and support theming across the application.
+
+---
+
+### Lifecycle Validation Logic
+
+Contract lifecycle rules are centralized in `src/utils/stateMachine.ts`.  
+All status changes are validated through a single transition-checking function, ensuring that contracts can move only through valid stages and that invalid or skipped transitions are prevented.
+
+This design keeps lifecycle behavior consistent across the UI and makes the logic easy to test and reason about. The lifecycle rules are covered by automated tests to verify correct behavior.
+
+---
+
+### Blueprint Snapshot Strategy
+
+When a contract is created from a blueprint, all blueprint fields are copied into the contract instead of being referenced directly.  
+This ensures that existing contracts remain unaffected by future blueprint edits and that each contract represents a stable snapshot of its original template.
+
+This approach reflects real-world contract systems, where generated documents are not modified retroactively.
+
 
 ## Project Structure
 
 ```
 src/
-├── components/     # Atomic UI (Button, Input, Modal) & feature components (SignaturePad)
-├── pages/          # Route views (Dashboard, Blueprints, Contracts, NotFound)
-├── stores/         # Zustand stores with localStorage persistence
-├── data/           # Default blueprint templates
-├── utils/          # State machine logic, date formatters, ID generators
-├── types/          # Shared TypeScript interfaces
-└── styles/         # CSS variables and global resets
+├── components/
+│   ├── features/
+│   │   ├── BlueprintForm/
+│   │   │   ├── BlueprintForm.tsx
+│   │   │   └── BlueprintForm.module.css
+│   │   │   # Blueprint creation and field configuration
+│   │   │
+│   │   └── SignaturePad/
+│   │       ├── SignaturePad.tsx
+│   │       └── SignaturePad.module.css
+│   │       # Canvas-based signature component
+│   │
+│   ├── Layout/
+│   │   ├── Layout.tsx
+│   │   └── Layout.module.css
+│   │   # Application shell and navigation
+│   │
+│   └── ui/
+│       ├── Badge/
+│       ├── Button/
+│       ├── Card/
+│       ├── Input/
+│       ├── Modal/
+│       ├── Select/
+│       ├── Table/
+│       └── Toast/
+│       # Reusable atomic UI components
+│
+├── data/
+│   # Preloaded default blueprint templates
+│
+├── pages/
+│   ├── Blueprints/
+│   │   ├── BlueprintCreate/
+│   │   ├── BlueprintEdit/
+│   │   └── BlueprintList/
+│   │
+│   ├── Contracts/
+│   │   ├── ContractCreate/
+│   │   └── ContractView/
+│   │
+│   ├── Dashboard/
+│   │   ├── Dashboard.tsx
+│   │   └── Dashboard.module.css
+│   │
+│   └── NotFound/
+│       # 404 fallback page
+│
+├── stores/
+│   ├── blueprintStore.ts
+│   ├── contractStore.ts
+│   ├── index.ts
+│   └── uiStore.ts
+│   # Zustand state management with persistence
+│
+├── styles/
+│   ├── global.css
+│   ├── reset.css
+│   └── variables.css
+│   # Global styling, CSS reset, and theme tokens
+│
+├── types/
+│   ├── blueprint.ts
+│   ├── contract.ts
+│   └── index.ts
+│   # Strongly typed domain models
+│
+├── utils/
+│   ├── stateMachine.ts
+│   └── index.ts
+│   # Core business logic and helpers
+│
+├── tests/
+│   ├── setup.ts
+│   └── stateMachine.test.ts
+│   # Unit tests for lifecycle rules
+│
+├── router.tsx
+│   # Application routing configuration
+│
+├── main.tsx
+│   # React application entry point
+│
+└── vite-env.d.ts
+    # Vite TypeScript environment definitions
+
+
 ```
 
 ## Assumptions
 
-**Single User Mode**: The app demonstrates the full lifecycle from one view. The user plays both roles—internal manager (approving, sending) and external client (signing). Role-based hints in the UI clarify which action belongs to whom.
+**Single-User Demonstration Mode**  
+The application is designed to demonstrate the complete contract lifecycle within a single UI. The same user performs both internal actions (creating, approving, sending contracts) and client-side actions (reviewing and signing). UI hints clearly indicate which actions represent manager vs client behavior.
 
-**No Backend**: All data lives in localStorage. This was intentional to keep the focus on frontend architecture. Swapping in an API later would just mean replacing the Zustand persist middleware with async fetches.
+**Frontend-Only Implementation (No Backend)**  
+This project intentionally does not use a backend service. All data is stored locally using browser `localStorage` via Zustand persistence. Because there is no server, actions that would normally involve external users (such as real email delivery or remote client signing) are simulated at the UI level.
 
-**Signature is Visual Only**: The signature pad uses HTML5 Canvas. It captures the drawing as a data URL but doesn't do any cryptographic verification. It's a simulation for demo purposes.
+**Signature Handling Limitation**  
+The signature feature is implemented using an HTML5 Canvas to visually capture a signature. However, since there is no backend or authentication layer, the contract lifecycle is intentionally constrained after the `SENT` stage.  
+This prevents artificial or unrealistic progression of the lifecycle and ensures that state transitions remain logically correct and non-deceptive.
+
+This limitation is a conscious design decision to preserve lifecycle integrity in a frontend-only system.
+
 
 ## Limitations
 
-- No drag-and-drop for field positioning (used move up/down buttons instead)
-- No undo/redo for actions
-- No PDF export
-- Mobile works but the table-heavy UI is optimized for desktop
+- Contract signing is simulated and does not involve real user authentication.
+- After sending a contract, progression depends on simulated client interaction.
+- No PDF export or document download is implemented.
+- Field ordering uses buttons instead of drag-and-drop.
+- UI is optimized primarily for desktop screens.
 
 ## Tests
 
@@ -83,14 +204,16 @@ npm run test
 - Valid forward transitions (Created → Approved → Sent → etc.)
 - Blocked transitions (can't skip states, can't go backward except Revert to Draft)
 - Terminal state enforcement (Locked/Revoked contracts can't transition)
-- Dashboard filter mapping
+- Dashboard filter mapping Verifies correct mapping of contract statuses to dashboard filters (Active, Pending, Signed, Archived)
 
 ## Default Templates
 
-The app ships with 4 ready-to-use blueprints:
-- Employment Contract
-- Non-Disclosure Agreement (NDA)
-- Freelance Service Agreement
-- Rental/Lease Agreement
+The application includes preloaded blueprint templates so the system can be explored immediately without manual setup:
 
-These are baked into the code so new users have something to work with immediately.
+Employment Contract
+
+Non-Disclosure Agreement (NDA)
+
+Freelance Service Agreement
+
+These templates are included directly within the application code to demonstrate real-world usage scenarios and ensure that evaluators can test blueprint creation, contract generation, and lifecycle flow immediately after setup.
