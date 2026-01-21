@@ -1,7 +1,7 @@
 # EURUSYS Contract Management Platform
 ## Live Demo
 
-https://eurusys-contract-management-platfor.vercel.app/
+https://main.d14jbli8kr9fvl.amplifyapp.com/
 
 This project is a EURUSYS Contract Management Platform developed using React and TypeScript.  
 It provides a structured way to create reusable contract blueprints, generate contracts from those blueprints, and manage contracts through a controlled lifecycle with clearly defined stages.
